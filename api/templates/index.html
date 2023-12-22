@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personajes rick and Morty</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Agrega tus estilos aquí -->
+    <link rel="stylesheet" href="{% static 'api/css/main.css' %}">    
+
+    <style>
+        body {
+    background: url('{% static "api/images/rick_01.jpg" %}') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    }
+    </style>
+    
+</head>
+<body>  
+
+    <!-- Agrega tu título aquí -->
+    <h1 class="title mb-5">Personajes Rick & Morty</h1>
+
+    <div class="container">
+            <div class="row">
+                {% for character in characters %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="{{ character.image }}" alt="{{ character.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ character.name }}</h5>
+                                <p class="card-text">
+                                    Estado: {{ character.status }}<br>
+                                    Especie: {{ character.species }}<br>
+                                    Tipo: {{ character.type }}<br>
+                                    Género: {{ character.gender }}<br>
+                                    Origen: {{ character.origin.name }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>   
+    </div>
+</body>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not info.prev %}disabled{% endif %}">
+                <a class="page-link prev-next" href="?page={{ info.prev }}">Anterior</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link current" href="#">Página: {{ page }}</a>
+            </li>
+            <li class="page-item {% if not info.next %}disabled{% endif %}">
+                <a class="page-link prev-next" href="?page={{ info.next }}">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+
+</html>
+

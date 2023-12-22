@@ -1,0 +1,41 @@
+/* body {
+    background: url('../images/rick_01.jpg') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+} */
+
+/* Agrega tus estilos para el título aquí */
+.title {
+    
+    font-family: 'Open Sans', sans-serif;
+    text-align: center;
+    color: #42e619;
+    font-size: 5em;
+    margin-top: 30px;
+    text-shadow: 0 0 10px #000000, 0 0 20px #000000, 0 0 30px #000000, 0 0 40px #000000;
+}
+
+/* Estilos para la paginación */
+.pagination .page-link {
+    border: none;
+    color: #ffffff;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #42e619;
+}
+
+.pagination .page-link.prev-next {
+    background-color: #007bff;
+}
+
+.pagination .page-link.current {
+    background-color: #6c757d;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: transparent;
+}
