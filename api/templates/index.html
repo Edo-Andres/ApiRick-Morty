@@ -8,6 +8,9 @@
     <title>Personajes rick and Morty</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
 
     <!-- Agrega tus estilos aquí -->
     <link rel="stylesheet" href="{% static 'api/css/main.css' %}">    
@@ -42,16 +45,19 @@
     </style>
     
 </head>
-<body>  
+<body class="mb-5">  
 
     <!-- Agrega tu título aquí -->
     <h1 class="title mb-5">Personajes Rick & Morty</h1>
 
         <!-- Agrega formulario buscador -->
-        <div class="container mt-4 mb-3 d-flex justify-content-end">
+        <div class="container mt-4 mb-3 d-flex fy-content-sm-center justify-content-md-end">
             <form id="character-search-form" class="form-inline">
-                <input class="form-control mr-sm-2" type="number" id="character-id" placeholder="Enter character ID">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <input class="form-control mr-sm-2" type="text" id="character-name" placeholder="Buscar personaje">
+                <!-- hacer que el boton all muestre todos los personajes o que recargue la pagina actual -->
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                    <i class="fas fa-trash"></i> Limpiar
+                </button>
             </form>
         </div>
 
@@ -79,43 +85,65 @@
 
     <script>
         
-        document.getElementById('character-search-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evita que se envíe el formulario
+        document.getElementById('character-name').addEventListener('input', function(event) {
+    var characterName = event.target.value; // Obtiene el nombre ingresado por el usuario
 
-    var characterId = document.getElementById('character-id').value; // Obtiene el ID ingresado por el usuario
+    if (characterName.length < 2) { // Si el nombre ingresado es demasiado corto, no hace nada
+        return;
+    }
 
-    fetch(`https://rickandmortyapi.com/api/character/${characterId}`) // Hace una solicitud a la API
-        .then(response => response.json())
-        .then(character => {
+    axios.get(`https://rickandmortyapi.com/api/character/?name=${characterName}`) // Hace una solicitud a la API
+        .then(response => {
+            var data = response.data;
+
             // Borra los personajes existentes
             var charactersContainer = document.getElementById('characters-container');
             charactersContainer.innerHTML = '';
 
-            // Crea el nuevo personaje
-            var characterDiv = document.createElement('div');
-            characterDiv.className = 'col-lg-4 col-md-6 mb-4'; // Asegúrate de usar las mismas clases que usas para los otros personajes
-            characterDiv.innerHTML = `
-                <div class="card h-100">
-                    <img class="card-img-top" src="${character.image}" alt="${character.name}">
-                    <div class="card-body">
-                        <h5 class="card-title">${character.name}</h5>
-                        <p class="card-text">
-                            Estado: ${character.status}<br>
-                            Especie: ${character.species}<br>
-                            Tipo: ${character.type}<br>
-                            Género: ${character.gender}<br>
-                            Origen: ${character.origin.name}
-                        </p>
-                    </div>
-                </div>
-            `;
+            // Crea una nueva fila
+            var row = document.createElement('div');
+            row.className = 'row';
 
-            // Agrega el nuevo personaje al contenedor
-            charactersContainer.appendChild(characterDiv);
+            // Crea los nuevos personajes
+            data.results.forEach(character => {
+                var characterDiv = document.createElement('div');
+                characterDiv.className = 'col-lg-4 col-md-6 mb-4'; // Asegúrate de usar las mismas clases que usas para los otros personajes
+                characterDiv.innerHTML = `
+                    <div class="card h-100">
+                        <img class="card-img-top" src="${character.image}" alt="${character.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${character.name}</h5>
+                            <p class="card-text">
+                                Estado: ${character.status}<br>
+                                Especie: ${character.species}<br>
+                                Tipo: ${character.type}<br>
+                                Género: ${character.gender}<br>
+                                Origen: ${character.origin.name}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                // Agrega el nuevo personaje a la fila
+                row.appendChild(characterDiv);
+            });
+
+            // Agrega la fila al contenedor
+            charactersContainer.appendChild(row);
         })
         .catch(error => console.error('Error:', error));
-    });
+});
 
+
+        document.getElementById('character-search-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita que el formulario se envíe
+
+            // Borra el campo de búsqueda
+            document.getElementById('character-name').value = '';
+
+            // Recarga la página
+            location.reload();
+});
     </script>
 </body>
     <nav aria-label="Page navigation example">
@@ -133,6 +161,13 @@
             </li>
         </ul>
     </nav>
+
+            <!-- Agrega tu pie de página aquí -->
+        <footer class="footer mt-auto py-3 bg-dark text-white">
+            <div class="container text-center">
+                <span>Created by Edo Echev | Dic 2024</span>
+            </div>
+        </footer>
 
 </html>
 

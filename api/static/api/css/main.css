@@ -39,3 +39,29 @@
     color: #6c757d;
     background-color: transparent;
 }
+
+.footer {
+    
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.title {
+    font-size: 3.5em; /* Tamaño del título para pantallas grandes */
+}
+
+/* Cuando la pantalla es de 600px o menos, disminuye el tamaño del título */
+@media screen and (max-width: 600px) {
+    .title {
+        font-size: 2.5em;
+    }
+}
+
+/* Cuando la pantalla es de 400px o menos, disminuye aún más el tamaño del título */
+@media screen and (max-width: 400px) {
+    .title {
+        font-size: 1.5em;
+    }
+}
