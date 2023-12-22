@@ -30,13 +30,13 @@
     background-color: #388E3C; /* Un verde un poco más oscuro al pasar el mouse */
     }
 
-    .prev-next {
+    .bprev-next {
     color: #FFFFFF !important; /* Color de texto blanco */
     background-color: #35c431 !important; /* Color de fondo naranja */
     transition: background-color 0.3s ease !important; /* Transición suave al cambiar el color de fondo */
     }
 
-    .prev-next:hover {
+    .bprev-next:hover {
     background-color: #5dff13 !important; /* Color de fondo naranja más oscuro al pasar el mouse */
     }    
     </style>
@@ -47,7 +47,15 @@
     <!-- Agrega tu título aquí -->
     <h1 class="title mb-5">Personajes Rick & Morty</h1>
 
-    <div class="container">
+        <!-- Agrega formulario buscador -->
+        <div class="container mt-4 mb-3 d-flex justify-content-end">
+            <form id="character-search-form" class="form-inline">
+                <input class="form-control mr-sm-2" type="number" id="character-id" placeholder="Enter character ID">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+
+    <div class="container"id= "characters-container">
             <div class="row">
                 {% for character in characters %}
                     <div class="col-lg-4 col-md-6 mb-4">
@@ -68,11 +76,52 @@
                 {% endfor %}
             </div>   
     </div>
+
+    <script>
+        
+        document.getElementById('character-search-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evita que se envíe el formulario
+
+    var characterId = document.getElementById('character-id').value; // Obtiene el ID ingresado por el usuario
+
+    fetch(`https://rickandmortyapi.com/api/character/${characterId}`) // Hace una solicitud a la API
+        .then(response => response.json())
+        .then(character => {
+            // Borra los personajes existentes
+            var charactersContainer = document.getElementById('characters-container');
+            charactersContainer.innerHTML = '';
+
+            // Crea el nuevo personaje
+            var characterDiv = document.createElement('div');
+            characterDiv.className = 'col-lg-4 col-md-6 mb-4'; // Asegúrate de usar las mismas clases que usas para los otros personajes
+            characterDiv.innerHTML = `
+                <div class="card h-100">
+                    <img class="card-img-top" src="${character.image}" alt="${character.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${character.name}</h5>
+                        <p class="card-text">
+                            Estado: ${character.status}<br>
+                            Especie: ${character.species}<br>
+                            Tipo: ${character.type}<br>
+                            Género: ${character.gender}<br>
+                            Origen: ${character.origin.name}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            // Agrega el nuevo personaje al contenedor
+            charactersContainer.appendChild(characterDiv);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    </script>
 </body>
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
             <li class="page-item {% if not prev_page %}disabled{% endif %}">
-                <a class="page-link prev-next" href="?page={{ prev_page }}"><< Prev</a>
+                <a class="page-link prev-next {% if page != 1 %}bprev-next{% endif %}" href="?page={{ prev_page }}"><< Prev</a>
             </li>
             {% for page_to_show in pages_to_show %}
                 <li class="page-item {% if page_to_show == page %}active{% endif %}">
@@ -80,7 +129,7 @@
                 </li>
             {% endfor %}
             <li class="page-item {% if not next_page %}disabled{% endif %}">
-                <a class="page-link prev-next bprev-next" href="?page={{ next_page }}">Next >></a>
+                <a class="page-link prev-next {% if page != 42 %}bprev-next{% endif %}" href="?page={{ next_page }}">Next >></a>
             </li>
         </ul>
     </nav>
