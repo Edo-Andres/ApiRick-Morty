@@ -5,11 +5,11 @@ import requests
 from urllib.parse import urlparse, parse_qs
 
 def verCharacteres(request):
-    # Obtiene la URL de la página de la solicitud, o usa la URL de la primera página si no se proporciona ninguna
-    page_url = request.GET.get('page', 'https://rickandmortyapi.com/api/character')
+    # Obtiene el número de página de la solicitud, o usa '1' si no se proporciona ninguno
+    page_number = request.GET.get('page', '1')
 
-    # Extrae el número de página de la URL
-    page_number = parse_qs(urlparse(page_url).query).get('page', [1])[0]
+    # Construye la URL de la página
+    page_url = f'https://rickandmortyapi.com/api/character?page={page_number}'
 
     # Realiza la solicitud GET a la API de Rick and Morty
     response = requests.get(page_url)
@@ -18,10 +18,20 @@ def verCharacteres(request):
     if response.status_code == 200:
         # Devuelve la respuesta JSON como un objeto JSON
         data = response.json()
+        # Extrae los números de página de las URLs prev y next
+        prev_page = data['info']['prev'].split('=')[-1] if data['info']['prev'] else None
+        next_page = data['info']['next'].split('=')[-1] if data['info']['next'] else None
+
+        # Calcula los números de las páginas que quieres mostrar
+        pages_to_show = list(range(max(1, int(page_number) - 3), min(data['info']['pages'], int(page_number) + 3) + 1))
+
         context = {
             'characters': data['results'],
             'info': data['info'],
-            'page': page_number  # Añade el número de página al contexto
+            'page': int(page_number),  # Añade el número de página al contexto
+            'pages_to_show': pages_to_show, # Añade los números de las páginas a mostrar al contexto
+            'prev_page': prev_page,  # Añade el número de la página previa al contexto
+            'next_page': next_page   # Añade el número de la página siguiente al contexto
         }
         return render(request, 'index.html', context)
     else:

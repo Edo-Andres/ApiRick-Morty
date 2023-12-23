@@ -8,6 +8,9 @@
     <title>Personajes rick and Morty</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
 
     <!-- Agrega tus estilos aquí -->
     <link rel="stylesheet" href="{% static 'api/css/main.css' %}">    
@@ -20,15 +23,45 @@
     -o-background-size: cover;
     background-size: cover;
     }
+
+    .page-inactive {
+    background-color: #4caad6; /* Un verde claro */
+    color: #FFFFFF; /* Blanco para el texto */
+    transition: background-color 0.3s ease;
+    }
+    .page-inactive:hover {
+    background-color: #388E3C; /* Un verde un poco más oscuro al pasar el mouse */
+    }
+
+    .bprev-next {
+    color: #FFFFFF !important; /* Color de texto blanco */
+    background-color: #35c431 !important; /* Color de fondo naranja */
+    transition: background-color 0.3s ease !important; /* Transición suave al cambiar el color de fondo */
+    }
+
+    .bprev-next:hover {
+    background-color: #5dff13 !important; /* Color de fondo naranja más oscuro al pasar el mouse */
+    }    
     </style>
     
 </head>
-<body>  
+<body class="mb-5">  
 
     <!-- Agrega tu título aquí -->
     <h1 class="title mb-5">Personajes Rick & Morty</h1>
 
-    <div class="container">
+        <!-- Agrega formulario buscador -->
+        <div class="container mt-4 mb-3 d-flex fy-content-sm-center justify-content-md-end">
+            <form id="character-search-form" class="form-inline">
+                <input class="form-control mr-sm-2" type="text" id="character-name" placeholder="Buscar personaje">
+                <!-- hacer que el boton all muestre todos los personajes o que recargue la pagina actual -->
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                    <i class="fas fa-trash"></i> Limpiar
+                </button>
+            </form>
+        </div>
+
+    <div class="container"id= "characters-container">
             <div class="row">
                 {% for character in characters %}
                     <div class="col-lg-4 col-md-6 mb-4">
@@ -49,20 +82,92 @@
                 {% endfor %}
             </div>   
     </div>
+
+    <script>
+        
+        document.getElementById('character-name').addEventListener('input', function(event) {
+    var characterName = event.target.value; // Obtiene el nombre ingresado por el usuario
+
+    if (characterName.length < 2) { // Si el nombre ingresado es demasiado corto, no hace nada
+        return;
+    }
+
+    axios.get(`https://rickandmortyapi.com/api/character/?name=${characterName}`) // Hace una solicitud a la API
+        .then(response => {
+            var data = response.data;
+
+            // Borra los personajes existentes
+            var charactersContainer = document.getElementById('characters-container');
+            charactersContainer.innerHTML = '';
+
+            // Crea una nueva fila
+            var row = document.createElement('div');
+            row.className = 'row';
+
+            // Crea los nuevos personajes
+            data.results.forEach(character => {
+                var characterDiv = document.createElement('div');
+                characterDiv.className = 'col-lg-4 col-md-6 mb-4'; // Asegúrate de usar las mismas clases que usas para los otros personajes
+                characterDiv.innerHTML = `
+                    <div class="card h-100">
+                        <img class="card-img-top" src="${character.image}" alt="${character.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${character.name}</h5>
+                            <p class="card-text">
+                                Estado: ${character.status}<br>
+                                Especie: ${character.species}<br>
+                                Tipo: ${character.type}<br>
+                                Género: ${character.gender}<br>
+                                Origen: ${character.origin.name}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                // Agrega el nuevo personaje a la fila
+                row.appendChild(characterDiv);
+            });
+
+            // Agrega la fila al contenedor
+            charactersContainer.appendChild(row);
+        })
+        .catch(error => console.error('Error:', error));
+});
+
+
+        document.getElementById('character-search-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita que el formulario se envíe
+
+            // Borra el campo de búsqueda
+            document.getElementById('character-name').value = '';
+
+            // Recarga la página
+            location.reload();
+});
+    </script>
 </body>
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-            <li class="page-item {% if not info.prev %}disabled{% endif %}">
-                <a class="page-link prev-next" href="?page={{ info.prev }}">Anterior</a>
+            <li class="page-item {% if not prev_page %}disabled{% endif %}">
+                <a class="page-link prev-next {% if page != 1 %}bprev-next{% endif %}" href="?page={{ prev_page }}"><< Prev</a>
             </li>
-            <li class="page-item disabled">
-                <a class="page-link current" href="#">Página: {{ page }}</a>
-            </li>
-            <li class="page-item {% if not info.next %}disabled{% endif %}">
-                <a class="page-link prev-next" href="?page={{ info.next }}">Siguiente</a>
+            {% for page_to_show in pages_to_show %}
+                <li class="page-item {% if page_to_show == page %}active{% endif %}">
+                    <a class="page-link {% if page_to_show != page %}page-inactive{% endif %}" href="?page={{ page_to_show }}">{{ page_to_show }}</a>
+                </li>
+            {% endfor %}
+            <li class="page-item {% if not next_page %}disabled{% endif %}">
+                <a class="page-link prev-next {% if page != 42 %}bprev-next{% endif %}" href="?page={{ next_page }}">Next >></a>
             </li>
         </ul>
     </nav>
+
+            <!-- Agrega tu pie de página aquí -->
+        <footer class="footer mt-auto py-3 bg-dark text-white">
+            <div class="container text-center">
+                <span>Created by Edo Echev | Dic 2023</span>
+            </div>
+        </footer>
 
 </html>
 
