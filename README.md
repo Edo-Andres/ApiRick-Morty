@@ -12,3 +12,6 @@ Este proyecto consiste en una aplicación web creada con Django y Bootstrap que 
 
 ![Demo de la Aplicación](https://github.com/Edo-Andres/archivos/blob/main/ApiRick_ok.gif)
 
+
+Api utilizada: https://rickandmortyapi.com/documentation
+
