@@ -1,2 +1,2 @@
 Demo de la App
-![](ApiRick_ok.gif)
+![](https://github.com/Edo-Andres/archivos/blob/main/ApiRick_ok.gif)
